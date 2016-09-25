@@ -4,6 +4,5 @@ applications:
   memory: 300M
   domain: https://api.ng.bluemix.net
   instances: 1
-  host: ${random-word}
   path: .
   buildpack: https://github.com/Abhikalra/learn-chaincode/cloudfoundry-buildpack-go
