@@ -2,7 +2,7 @@
 applications:
 - name: learn-chaincode
   memory: 300M
-  domain: mybluemix.net
+  domain: https://api.ng.bluemix.net
   instances: 1
   host: ${random-word}
   path: .
