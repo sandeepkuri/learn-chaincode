@@ -1,0 +1,201 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Chaincode Demo</title>
+	<meta charset="utf-8" />
+    <script type="text/javascript" src="./jquery1.9.1.min.js"></script>
+    <script type="text/javascript" >
+        function createLog(string){
+          var previous_logs = document.getElementById("logs").innerHtml;
+          if(previous_logs == undefined){
+             previous_logs = "";
+          }
+          else{
+            previous_logs += "\n";
+          }
+          document.getElementById("logs").textContent = previous_logs + string;
+
+        }
+
+
+        // ToDo: How to get already deployed chaincode Id using API?
+        // This is enable reuse of previous deployments.
+        /*function DeployChainCode(){
+           var bluemix_url = "https://15d19f2c-ffce-4bbf-88cc-40c58cd84c76_vp1.us.blockchain.ibm.com:443/chaincode";
+           createLog("Deploying chaincode...");
+           deploy_query = {
+                            "jsonrpc": "2.0",
+                            "method": "deploy",
+                            "params": {
+                              "type": 1,
+                              "chaincodeID": {
+                                "path": "https://github.com/Abhikalra/learn-chaincode/"
+                              },
+                              "ctorMsg": {
+                                "function": "init",
+                                "args": [
+                                  "abhinav","B00715340"
+                                ]
+                              },
+                              "secureContext": "admin"
+                            },
+                            "id": 0
+                          };
+
+            $.post({ url: bluemix_url, data:deploy_query, dataType:"json", function(result){
+                      if(result['result']!=undefined){
+                        var chain_id = result.result.message;
+                        document.getElementById("chainid").textContent = chain_id;
+                      }
+                      else if(result['error']!=undefined){
+                        createLog("Failed to create contract or deploy chaincode.");
+                      }
+                    }
+
+            });
+        }*/
+
+        function Upload()
+        {
+            var name = document.getElementById("Uname").value;
+            var banner = document.getElementById("bannerid").value;
+            var subject1 = document.getElementById("sub1").value;
+            var subject2 = document.getElementById("sub2").value;
+            var subject3 = document.getElementById("sub3").value;
+
+            // Create a URL
+            var bluemix_url = "https://15d19f2c-ffce-4bbf-88cc-40c58cd84c76_vp1.us.blockchain.ibm.com:443/chaincode";
+            var invoke_query = {
+                                    "jsonrpc": "2.0",
+                                    "method": "invoke",
+                                    "params": {
+                                      "type": 1,
+                                      "chaincodeID": {
+                                        "name": "12f4413e077dcd281a42c2a862974b27d7fb3ee8b6640754b972b3ff667ca5c3ad6815829b4a62c6e406fdcdeed525c546386d66dec66a2adefa972df7c9c98e"
+                                      },
+                                      "ctorMsg": {
+                                        "function": "write",
+                                        "args": []
+                                      },
+                                      "secureContext": "admin"
+                                    },
+                                    "id": 1
+                            };
+              invoke_query.params.ctorMsg.args.push(name);
+              invoke_query.params.ctorMsg.args.push(banner);
+              invoke_query.params.ctorMsg.args.push(subject1);
+              invoke_query.params.ctorMsg.args.push(subject2);
+              invoke_query.params.ctorMsg.args.push(subject3);
+
+              $.post({ url: bluemix_url, data:invoke_query, dataType:"json", function(result){
+                    if(result['result']!=undefined){
+                      createLog("Record added to the chain: " + result.result.message);
+                    }
+                    else if(result['error']!=undefined){
+                      createLog("Failed to add record to the chain.");
+                    }
+                  }
+              });
+
+
+
+        }
+        function get_data()
+        {
+          var gname = document.getElementById("Getname").value;
+          var bluemix_url = "https://15d19f2c-ffce-4bbf-88cc-40c58cd84c76_vp1.us.blockchain.ibm.com:443/chaincode";
+          var query_query = {
+
+              "jsonrpc": "2.0",
+              "method": "query",
+              "params": {
+                "type": 1,
+                "chaincodeID": {
+                  "name": "12f4413e077dcd281a42c2a862974b27d7fb3ee8b6640754b972b3ff667ca5c3ad6815829b4a62c6e406fdcdeed525c546386d66dec66a2adefa972df7c9c98e"
+                },
+                "ctorMsg": {
+                  "function": "read",
+                  "args": []
+                },
+                "secureContext": "admin"
+              },
+              "id": 2
+            }
+        query_query.params.ctorMsg.args.push(gname);
+        $.post({ url: bluemix_url, data:query_query, dataType:"json", function(result){
+              if(result['result']!=undefined){
+                createLog(gname +  ":data found. " + result.result.message);
+              }
+              else if(result['error']!=undefined){
+                createLog(gname + ": data doesn't exists. " + result.error.message + " "  + result.error.data);
+              }
+            }
+        });
+      }
+
+    </script>
+</head>
+<body>
+    <table style="width: 100%; height: 330px;">
+        <tr style="align-content:center">
+            <td >ENTER USER DETAILS</td>
+            <td> GET USER DETAIL</td>
+
+        </tr>
+        <tr style="align-content:center">
+            <td class="auto-style1">
+                User Name&nbsp;&nbsp;
+                <input ID="Uname" type="text" Height="24px"></input>
+            </td>
+            <td>
+                User Name&nbsp;&nbsp;
+                <input ID="Getname" type="text" Height="24px"></input>
+                </td>
+
+        </tr>
+        <tr>
+            <td class="auto-style1">
+                Banner ID&nbsp;
+                <input id="bannerid"  Height="23px" Width="127px" type="text" />
+
+            </td>
+            <td>
+                <input id="Getdata" type="Button" value="GET USER DATA" onclick="get_data()" />
+                </td>
+        </tr>
+        <tr>
+            <td class="auto-style1">
+                Subject 1&nbsp;
+                <input ID="sub1"  Height="23px" Width="127px" type="text"/>
+
+            </td>
+
+        </tr><tr>
+            <td class="auto-style1">
+                Subject 2&nbsp;
+                <input ID="sub2"  Height="23px" Width="127px" type="text"/>
+
+            </td>
+        </tr><tr>
+            <td class="auto-style1">
+                Subject 3&nbsp;
+                <input ID="sub3"  Height="23px" Width="127px" type="text"/>
+
+            </td>
+
+        </tr>
+        <tr>
+            <td>
+                <input id="AddB" type="Button" value="ADD DETAIL" onclick="Upload()" />
+                </td>
+
+            </tr>
+    </table>
+    LOG
+    <p>
+      <input id="chainid" type="hidden" value="" />
+        <div id="logs" style="height:100px;width:90%;"></div>
+        <textarea id="TextArea1" name="Log" style="height:100px;width:90%;"></textarea>
+    </p>
+</body>
+</html>
